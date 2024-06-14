@@ -1,11 +1,11 @@
 import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from 'react-router-dom';
+// import { useLocation, useParams } from 'react-router-dom';
 import MarketplaceJSON from "../Marketplace.json";
 import axios from "axios";
 import NFTTile from "./NFTTile";
 
-export default function Profile(props) {
+export default function Profile() {
     const [data, updateData] = useState([]);
     const [dataFetched, updateFetched] = useState(false);
     const [address, updateAddress] = useState("0x");
@@ -15,7 +15,7 @@ export default function Profile(props) {
        
         let cartItemIds = JSON.parse(localStorage.getItem('cart')) || [];
         let nftData = [];
-        console.log(nftData)
+        
       
       
         // Loop through each token ID in the cart

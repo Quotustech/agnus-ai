@@ -13,21 +13,20 @@ export default function NFTPage(props) {
   const [currAddress, updateCurrAddress] = useState("0x");
   const [listingPrice, setListingPrice] = useState('');
 
-  async function addToCart(tokenId) {
-    let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    if (cartItems.includes(tokenId)) {
-      alert('NFT is already added to the cart!');
-      return;
-    }
-    cartItems.push(tokenId);
-    console.log(tokenId);
-    localStorage.setItem('cart', JSON.stringify(cartItems.map(item => item)));
-    alert('Item added to cart!');
-  }
+  // async function addToCart(tokenId) {
+  //   let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+  //   if (cartItems.includes(tokenId)) {
+  //     alert('NFT is already added to the cart!');
+  //     return;
+  //   }
+  //   cartItems.push(tokenId);
+  //   console.log(tokenId);
+  //   localStorage.setItem('cart', JSON.stringify(cartItems.map(item => item)));
+  //   alert('Item added to cart!');
+  // }
 
   const handleReListNFT = async () => {
     try {
-      console.log('tokenId:', tokenId);
       if (!listingPrice || isNaN(listingPrice) || parseFloat(listingPrice) <= 0) {
         alert('Please enter a valid listing price.');
         return;
@@ -37,7 +36,6 @@ export default function NFTPage(props) {
       let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
   
       let transaction = await contract.listNFT(tokenId, ethers.utils.parseUnits(listingPrice, 'ether'), { value: await contract.getListPrice() });
-      console.log('Transaction:', transaction);
       await transaction.wait();
       alert('Your NFT has been listed successfully!');
   
@@ -58,7 +56,6 @@ export default function NFTPage(props) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const addr = await signer.getAddress();
-      console.log(addr);
 
       let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
 
@@ -66,7 +63,6 @@ export default function NFTPage(props) {
       const listedToken = await contract.getListedTokenForId(tokenId);
       const tokenURI = await contract.tokenURI(tokenId);
       const meta = await axios.get(GetIpfsUrlFromPinata(tokenURI));
-      console.log("getNFTdata is called");
 
       let item = {
         price: ethers.utils.formatUnits(listedToken.price, 'ether'), // Fetch price from blockchain
@@ -77,7 +73,6 @@ export default function NFTPage(props) {
         name: meta.data.name,
         description: meta.data.description,
       };
-      console.log(item.price);
 
       updateData(item);
       updateDataFetched(true);
@@ -89,7 +84,6 @@ export default function NFTPage(props) {
   }
 
   async function buyNFT(tokenId) {
-    console.log(data.price)
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();

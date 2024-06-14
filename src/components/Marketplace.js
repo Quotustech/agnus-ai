@@ -18,7 +18,7 @@ export default function Marketplace() {
             const signer = provider.getSigner();
             let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
             let transaction = await contract.getAllNFTs();
-            console.log("get all nfts called");
+            
 
             if (!transaction || transaction.length === 0) {
                 // If no NFTs are found, return an empty array
@@ -53,7 +53,6 @@ export default function Marketplace() {
     }
     
     useEffect(() => {
-        console.log('get nft called');
         getAllNFTs();
     }, []);
 

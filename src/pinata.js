@@ -2,8 +2,7 @@
 const key = process.env.REACT_APP_PINATA_KEY;
 const secret = process.env.REACT_APP_PINATA_SECRET;
 const jwt = process.env.REACT_APP_PINATA_JWT
-console.log('key' , key);
-console.log("secret" , secret);
+
 
 const axios = require('axios');
 const FormData = require('form-data');
@@ -26,7 +25,6 @@ export const uploadJSONToIPFS = async(JSONBody) => {
            };
         })
         .catch(function (error) {
-            console.log("========+++++",error)
             return {
                 success: false,
                 message: error.message,

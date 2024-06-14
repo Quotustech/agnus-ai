@@ -1,5 +1,5 @@
-import logo from '../logo_3.png';
-import fullLogo from '../full_logo.png';
+// import logo from '../logo_3.png';
+// import fullLogo from '../full_logo.png';
 import {
   BrowserRouter as Router,
   Switch,
@@ -39,26 +39,34 @@ function Navbar() {
   async function connectWebsite() {
     try {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x44C')
-      // 0xaa36a7 sepolia
-      {
-        //alert('Incorrect network! Switch your metamask network to Rinkeby');
+      if (chainId !== '0x44C') {
         await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x44C' }],
-        })
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x44C',
+            chainName: 'Agnus AI',
+            nativeCurrency: {
+              name: 'Agnus',
+              symbol: 'AGN',
+              decimals: 18
+            },
+            rpcUrls: ['https://rpc.agnscan.com'],
+            blockExplorerUrls: ['https://explorer.agnscan.com']
+          }]
+        }).catch((error) => {
+          console.error('Failed to add chain:', error);
+        });
       }
       await window.ethereum.request({ method: 'eth_requestAccounts' })
         .then(() => {
           updateButton();
-          console.log("here");
           getAddress();
-          // window.location.replace(location.pathname)
+          
         }).catch((err) => {
-          console.log('??????', err);
+          console.log('Failed to request accounts:', err);
         });
     } catch (error) {
-      console.log(error)
+      console.log('Failed to connect:', error);
     }
   }
 
@@ -66,9 +74,7 @@ function Navbar() {
     if (window.ethereum === undefined)
       return;
     let val = window.ethereum.isConnected();
-    console.log('connected', val)
     if (val) {
-      console.log("here");
       getAddress();
       toggleConnect(val);
       updateButton();
@@ -96,7 +102,7 @@ function Navbar() {
           {menuOpen ? <IoIosClose size={24} /> : <GiHamburgerMenu size={24} />}
         </div>
         {/* nav options */}
-      <div className={`lg:flex ${menuOpen ? 'block' : 'hidden'} w-[96%] lg:w-auto lg:items-center lg:ml-auto  absolute lg:relative -bottom-[13rem] lg:bottom-0 bg-gray-900`}>
+        <div className={`lg:flex ${menuOpen ? 'block' : 'hidden'} w-[96%] lg:w-auto lg:items-center lg:ml-auto  absolute lg:relative -bottom-[13rem] lg:bottom-0 bg-gray-900`}>
           <ul className='lg:flex justify-between font-bold text-lg lg:space-x-6'>
             <li className={`p-2 ${location.pathname === "/" ? 'border-b-2' : 'hover:border-b-2'}`}>
               <Link to="/">Marketplace</Link>
