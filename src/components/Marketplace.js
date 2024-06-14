@@ -9,13 +9,29 @@ import { ethers } from 'ethers';
 export default function Marketplace() {
     const [data, updateData] = useState([]);
     const [dataFetched, updateFetched] = useState(false);
-    const [walletConnect, setWalletConnect] = useState();
+    const [walletConnected, setWalletConnected] = useState(false);
+
+    async function requestAccount() {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            setWalletConnected(true);
+        } catch (error) {
+            console.log("User rejected account access", error);
+        }
+    }
 
     async function getAllNFTs() {
+        if (!window.ethereum) {
+            console.log("MetaMask is not installed!");
+            return;
+        }
+
         try {
+            await requestAccount();
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            
             const signer = provider.getSigner();
+            const address = await signer.getAddress(); // Check if the signer can get the address
+
             let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
             let transaction = await contract.getAllNFTs();
             

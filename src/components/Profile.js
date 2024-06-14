@@ -28,33 +28,38 @@ export default function Profile() {
       }
 
     async function getNFTData() {
-       
         const ethers = require("ethers");
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const addr = await signer.getAddress();
-        let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
-        let transaction = await contract.getMyNFTs();
-        
-        const items = await Promise.all(transaction.map(async i => {
-            const tokenURI = await contract.tokenURI(i.tokenId);
-            let meta = await axios.get(tokenURI);
-            meta = meta.data; 
-            let item = {
-                tokenId: i.tokenId.toNumber(),
-                seller: i.seller,
-                owner: i.owner,
-                image: meta.image,
-                name: meta.name,
-                description: meta.description,
-                price: ethers.utils.formatEther(i.price)
-            }
-            return item;
-        }));
 
-        updateData(items);
-        updateFetched(true);
-        updateAddress(addr);
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const addr = await signer.getAddress();
+            updateAddress(addr);
+
+            let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
+            let transaction = await contract.getMyNFTs();
+
+            const items = await Promise.all(transaction.map(async i => {
+                const tokenURI = await contract.tokenURI(i.tokenId);
+                let meta = await axios.get(tokenURI);
+                meta = meta.data;
+                let item = {
+                    tokenId: i.tokenId.toNumber(),
+                    seller: i.seller,
+                    owner: i.owner,
+                    image: meta.image,
+                    name: meta.name,
+                    description: meta.description,
+                    price: ethers.utils.formatEther(i.price)
+                }
+                return item;
+            }));
+
+            updateData(items);
+            updateFetched(true);
+        } catch (error) {
+            console.error("Error fetching NFTs:", error);
+        }
     }
 
     useEffect(() => {
@@ -77,51 +82,25 @@ export default function Profile() {
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col items-center justify-center space-y-8 text-white">
                     <ul className="flex space-x-4">
-                        {/* <li onClick={() => { getCartItems(); setActiveTab("Cart"); }} className={`cursor-pointer ${activeTab === "Cart" ? 'text-blue-500' : 'text-white'}`}>Cart</li> */}
-                        <li onClick={() => setActiveTab("Collected")} className={`cursor-pointer ${activeTab === "Collected" ? 'text-blue-500' : 'text-white'}`}>Collected {data.length} </li>
-                        {/* <li onClick={() => setActiveTab("Activity")} className={`cursor-pointer ${activeTab === "Activity" ? 'text-blue-500' : 'text-white'}`}>Activity</li> */}
+                        <li onClick={() => setActiveTab("Collected")} className={`cursor-pointer ${activeTab === "Collected" ? 'text-blue-500' : 'text-white'}`}>
+                            Collected {data.length}
+                        </li>
                     </ul>
-                    {activeTab === "Collected" && <div className="text-center">
-                        <div className="flex justify-center gap-3 flex-wrap max-w-screen-xl">
-                            {filteredData.length > 0 ? (
-                                filteredData.map((value, index) => {
-                                    return <NFTTile data={value} key={index} ></NFTTile>;
-                                })
-                            ) : (
-                                <div className="mt-4 text-xl">
-                                    No NFTs found.
-                                </div>
-                            )}
+                    {activeTab === "Collected" && (
+                        <div className="text-center">
+                            <div className="flex justify-center gap-3 flex-wrap max-w-screen-xl">
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((value, index) => {
+                                        return <NFTTile data={value} key={index} ></NFTTile>;
+                                    })
+                                ) : (
+                                    <div className="mt-4 text-xl">
+                                        No NFTs found.
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>}
-                    {activeTab === "Cart" && <div className="text-center">
-                        <div className="flex justify-center gap-3 flex-wrap max-w-screen-xl">
-                            {filteredData.length > 0 ? (
-                                filteredData.map((value, index) => {
-                                    return <NFTTile data={value} key={index} ></NFTTile>;
-                                })
-                            ) : (
-                                <div className="mt-4 text-xl">
-                                    No NFTs found.
-                                </div>
-                            )}
-                        </div>
-                    </div>}
-                    {activeTab === "Activity" && <div className="text-center">
-                        Activity
-                        <table className=""  >
-                            <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Time</th>
-                            </tr>
-                            <td>one</td>
-                            <td>two</td>
-                            <td>three</td>
-                        </table>
-                    </div>}
+                    )}
                 </div>
             </div>
         </div>

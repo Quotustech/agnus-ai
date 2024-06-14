@@ -20,11 +20,15 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   async function getAddress() {
-    const ethers = require("ethers");
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const addr = await signer.getAddress();
-    updateAddress(addr);
+    try {
+      const ethers = require("ethers");
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const addr = await signer.getAddress();
+      updateAddress(addr);
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
   }
 
   function updateButton() {

@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  agnus-ai:
+    container_name: agnus-ai
+    image: agnus-ai-production:1.0.0
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3010:3010"
+    volumes:
+      - agnus-ai-data:/app
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+
+volumes:
+  agnus-ai-data:
